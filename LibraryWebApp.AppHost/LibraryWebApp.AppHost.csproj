@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>23014c89-8c7f-46bb-a687-2402bed84f8c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="8.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LibraryWebApp.ApiGatewayYARP\LibraryWebApp.ApiGatewayYARP.csproj" />
+    <ProjectReference Include="..\LibraryWebApp.AuthorService\LibraryWebApp.AuthorService.csproj" />
+    <ProjectReference Include="..\LibraryWebApp.AuthService\LibraryWebApp.AuthService.csproj" />
+    <ProjectReference Include="..\LibraryWebApp.BookService\LibraryWebApp.BookService.csproj" />
+  </ItemGroup>
+
+</Project>
