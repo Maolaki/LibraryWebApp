@@ -13,6 +13,15 @@ namespace LibraryWebApp.AuthorService.Application.Services
             _unitOfWork = unitOfWork;
         }
 
+        public int GetAuthorId(string firstName, string lastName)
+        {
+            var author = _unitOfWork.Authors.GetAll()
+                    .FirstOrDefault(a => a.FirstName!.Equals(firstName)
+                                     && a.LastName!.Equals(lastName));
+
+            return author!.Id;
+        }
+
         public IEnumerable<Author> GetAllAuthors(int pageNumber, int pageSize)
         {
             return _unitOfWork.Authors.GetAll()

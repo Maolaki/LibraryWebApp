@@ -2,6 +2,8 @@
 using LibraryWebApp.BookService.Domain.Entities;
 using LibraryWebApp.BookService.Domain.Interfaces;
 using LibraryWebApp.BookService.Application.DTOs;
+using LibraryWebApp.BookService.Domain.Enums;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LibraryWebApp.BookService.Application.Services
 {
@@ -20,22 +22,80 @@ namespace LibraryWebApp.BookService.Application.Services
 
         public IEnumerable<Book> GetAllBooks(int pageNumber, int pageSize)
         {
-            return _unitOfWork.Books.GetAll()
+            var uniqueBooks = _unitOfWork.Books.GetAll()
+                .GroupBy(book => book.ISBN)
+                .Select(group => group.First())
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
+
+            return uniqueBooks;
         }
+
+        public IEnumerable<Book> GetAllBooksWithFilters(int pageNumber, int pageSize, string title, BookGenre? genre, int? authorId = null)
+        {
+            var booksQuery = _unitOfWork.Books.GetAll();
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                booksQuery = booksQuery.AsEnumerable()
+                             .Where(b => b.Title!.Contains(title, StringComparison.OrdinalIgnoreCase))
+                             .AsQueryable();
+            }
+
+            if (authorId != null)
+            {
+                booksQuery = booksQuery.AsEnumerable()
+                            .Where(book => book.AuthorId == authorId)
+                            .AsQueryable();
+            }
+
+            if (genre.HasValue)
+            {
+                booksQuery = booksQuery.AsEnumerable()
+                            .Where(book => book.Genre == genre.Value)
+                            .AsQueryable();
+            }
+
+            var uniqueBooks = booksQuery
+                .GroupBy(book => book.ISBN)
+                .Select(group => group.First())
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+            return uniqueBooks;
+        }
+
 
         public Book GetBook(int id)
         {
             return _unitOfWork.Books.Get(b => b.Id == id);
         }
 
-        public IEnumerable<Book> GetBookByISBN(string isbn)
+        public IEnumerable<Book> GetBooksByISBN(string isbn)
         {
             return _unitOfWork.Books.GetAll()
                 .Where(b => b.ISBN == isbn)
                 .ToList(); 
         }
+
+        public int GetAvailableCopies(string isbn)
+        {
+            var books = _unitOfWork.Books.GetAll().Where(b => b.ISBN == isbn).ToList();
+
+            if (!books.Any())
+            {
+                return 0; 
+            }
+
+            int totalCopies = books.Count;
+
+            int borrowedCopies = books.Count(b => b.UserId != null); 
+
+            int availableCopies = totalCopies - borrowedCopies;
+
+            return availableCopies;
+        }
+
 
         public void AddBook(Book book)
         {
@@ -118,7 +178,7 @@ namespace LibraryWebApp.BookService.Application.Services
                 book.ImageContentType = imageDto.ImageContentType;
 
                 var cacheKey = $"book-image-{bookId}";
-                _memoryCache.Set(cacheKey, imageDto.Image, TimeSpan.FromDays(1));
+                _memoryCache.Set(cacheKey, imageDto, TimeSpan.FromDays(1));
 
                 _unitOfWork.Save(); 
             }

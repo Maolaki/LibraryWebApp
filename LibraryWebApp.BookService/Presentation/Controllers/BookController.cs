@@ -11,54 +11,76 @@ namespace LibraryWebApp.BookService.Presentation.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BooksController : ControllerBase
+    public class BookController : ControllerBase
     {
         private readonly IBookService _bookService;
         private readonly IMapper _mapper;
 
-        public BooksController(IBookService bookService, IMapper mapper)
+        public BookController(IBookService bookService, IMapper mapper)
         {
             _bookService = bookService;
             _mapper = mapper;
         }
 
         [HttpGet]
-        [Authorize]
-        public ActionResult<IEnumerable<Book>> GetAllBooks(int pageNumber = 1, int pageSize = 10)
+        public ActionResult<IEnumerable<BookDTO>> GetAllBooks(int pageNumber = 1, int pageSize = 10)
         {
             var books = _bookService.GetAllBooks(pageNumber, pageSize);
-            return Ok(books);
+
+            var booksDto = _mapper.Map<IEnumerable<BookDTO>>(books);
+
+            return Ok(booksDto);
+        }
+
+        [HttpGet("filtered/")]
+        public ActionResult GetBooksWithFilters(int pageNumber = 1, int pageSize = 10, string? title = null, int? authorId = null, BookGenre? genre = null)
+        {
+            var books = _bookService.GetAllBooksWithFilters(pageNumber, pageSize, title, genre, authorId);
+
+            var booksDto = _mapper.Map<IEnumerable<BookDTO>>(books);
+
+            return Ok(booksDto);
         }
 
         [HttpGet("{id}")]
-        [Authorize]
-        public ActionResult<Book> GetBook(int id)
+        public ActionResult<BookDTO> GetBook(int id)
         {
             var book = _bookService.GetBook(id);
             if (book == null)
             {
                 return NotFound();
             }
-            return Ok(book);
+
+            var bookDto = _mapper.Map<BookDTO>(book);
+
+            return Ok(bookDto);
         }
 
         [HttpGet("isbn/{isbn}")]
-        [Authorize]
-        public ActionResult<IEnumerable<Book>> GetBookByISBN(string isbn)
+        public ActionResult<IEnumerable<BookDTO>> GetBooksByISBN(string isbn)
         {
             if (string.IsNullOrEmpty(isbn))
             {
                 return BadRequest("ISBN cannot be null or empty.");
             }
 
-            var books = _bookService.GetBookByISBN(isbn);
+            var books = _bookService.GetBooksByISBN(isbn);
 
             if (books == null || !books.Any())
             {
                 return NotFound("No books found with the provided ISBN.");
             }
 
-            return Ok(books);
+            var booksDto = _mapper.Map<IEnumerable<BookDTO>>(books);
+
+            return Ok(booksDto);
+        }
+
+        [HttpGet("{isbn}/availableCopies")]
+        public ActionResult<int> GetAvailableCopies(string isbn)
+        {
+            var availableCopies = _bookService.GetAvailableCopies(isbn); 
+            return Ok(availableCopies); 
         }
 
         [HttpPost]
@@ -165,7 +187,6 @@ namespace LibraryWebApp.BookService.Presentation.Controllers
         }
 
         [HttpGet("image/{bookId}")]
-        [Authorize]
         public ActionResult GetBookImage(int bookId)
         {
             var imageDto = _bookService.GetBookImage(bookId);

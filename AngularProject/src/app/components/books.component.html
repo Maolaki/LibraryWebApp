@@ -1,0 +1,50 @@
+<div class="header-bar">
+  <div *ngIf="!isAuthenticated">
+    <button (click)="navigateTo('login')" class="auth-btn">Войти</button>
+    <button (click)="navigateTo('register')" class="auth-btn">Регистрация</button>
+  </div>
+  <div *ngIf="isAuthenticated && isUser">
+    <button (click)="logout()" class="auth-btn">Выйти</button>
+  </div>
+</div>
+
+<div>
+  <h1>Список книг</h1>
+  <a [routerLink]="['/my-books']" class="my-books-link">Мои книги</a>
+
+  <input type="text" [(ngModel)]="titleFilter" placeholder="Поиск по названию" />
+  <select [(ngModel)]="genreFilter" (change)="onGenreChange(genreFilter)">
+    <option value="">Все жанры</option>
+    <option *ngFor="let genre of genres" [value]="genre">{{ genre }}</option>
+  </select>
+  <select (change)="onAuthorSelected($event)" class="form-control" required>
+    <option value="" disabled selected>Выберите автора</option>
+    <option *ngFor="let author of authorsFilter" [value]="author.firstName + ',' + author.lastName">
+      {{ author.firstName }} {{ author.lastName }}
+    </option>
+  </select>
+  <button (click)="onSearch()">Поиск</button>
+
+  <div *ngIf="!books || books.length === 0">Книги отсутствуют в наличии.</div>
+
+  <div class="book-grid">
+    <div class="book-card" *ngFor="let book of books">
+      <img *ngIf="imageUrls[book.id]" [src]="imageUrls[book.id]" alt="Book image" class="book-image" />
+      <ng-template #noImage>
+        <div class="empty-image">Нет изображения</div>
+      </ng-template>
+
+      <h3 class="book-title">{{ book.title }}</h3>
+      <p class="book-genre"><strong>Жанр:</strong> {{ getGenreName(book.genre) }}</p>
+      <p *ngIf="availabilityMap[book.isbn!]; else unavailable">Книга есть в наличии</p>
+      <ng-template #unavailable><p>Книги нет в наличии</ng-template>
+
+      <button (click)="viewBook(book.isbn!)" class="view-btn">Просмотр</button>
+    </div>
+  </div>
+
+  <div *ngIf="totalCount > pageSize">
+    <button (click)="onPageChange(pageNumber - 1)" [disabled]="pageNumber === 1">Предыдущая</button>
+    <button (click)="onPageChange(pageNumber + 1)" [disabled]="pageNumber * pageSize >= totalCount">Следующая</button>
+  </div>
+</div>

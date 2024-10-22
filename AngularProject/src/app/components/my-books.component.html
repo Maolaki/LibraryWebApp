@@ -1,0 +1,21 @@
+<div>
+  <h1>Мои книги</h1>
+
+  <div *ngIf="!myBooks || myBooks.length === 0">У вас нет взятых книг.</div>
+
+  <div class="book-grid">
+    <div class="book-card" *ngFor="let book of myBooks">
+      <img *ngIf="imageUrls[book.id]" [src]="imageUrls[book.id]" alt="Book image" class="book-image" />
+      <ng-template #noImage>
+        <div class="empty-image">Нет изображения</div>
+      </ng-template>
+
+      <h3 class="book-title">{{ book.title }}</h3>
+      <p class="book-genre"><strong>Жанр:</strong> {{ getGenreName(book.genre) }}</p>
+      <p><strong>Дата взятия:</strong> {{ book.checkoutDateTime | date }}</p>
+      <p><strong>Дата возврата:</strong> {{ book.returnDateTime | date }}</p>
+
+      <button (click)="returnBook(book.id)" class="return-btn">Вернуть книгу</button>
+    </div>
+  </div>
+</div>

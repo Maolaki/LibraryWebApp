@@ -13,17 +13,6 @@ namespace LibraryWebApp.ApiGatewayYARP
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(
-                    builder =>
-                    {
-                        builder.AllowAnyOrigin()
-                               .AllowAnyMethod()
-                               .AllowAnyHeader();
-                    });
-            });
-
             var app = builder.Build();
 
             app.MapDefaultEndpoints();
@@ -41,7 +30,7 @@ namespace LibraryWebApp.ApiGatewayYARP
                 });
             }
 
-            app.UseCors();
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             app.UseHttpsRedirection();
 

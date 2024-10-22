@@ -1,0 +1,65 @@
+.book-detail-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #333333;
+}
+
+.book-image {
+  width: 180px;
+  height: 300px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.empty-image {
+  width: 180px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  color: #888;
+  font-size: 16px;
+}
+
+p {
+  font-size: 16px;
+  color: #555555;
+  margin: 10px 0;
+}
+
+strong {
+  color: #333;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 16px;
+}
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+.ng-template {
+  color: #ff0000;
+  font-weight: bold;
+}

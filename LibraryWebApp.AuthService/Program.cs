@@ -104,10 +104,13 @@ namespace LibraryWebApp.AuthService
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseHttpsRedirection();
             app.MapControllers();
+
             app.Run();
         }
     }

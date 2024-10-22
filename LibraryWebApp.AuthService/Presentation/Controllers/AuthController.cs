@@ -1,6 +1,8 @@
-﻿using LibraryWebApp.AuthService.Application.DTOs;
+﻿using Azure;
+using LibraryWebApp.AuthService.Application.DTOs;
 using LibraryWebApp.AuthService.Application.Validators;
 using LibraryWebApp.AuthService.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("[controller]")]
@@ -54,5 +56,23 @@ public class AuthController : ControllerBase
         }
 
         return Ok(response);
+    }
+
+    [HttpGet("get-id")]
+    [Authorize]
+    public ActionResult<int> GetId()
+    {
+        var username = User.Identity?.Name;
+
+        var user = _unitOfWork.Users.Get(u => u.Username == username);
+
+        if (user is null)
+        {
+            return BadRequest("User is not found.");
+        }
+
+        long id = user.Id;
+
+        return Ok(id);
     }
 }

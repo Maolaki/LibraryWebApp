@@ -1,0 +1,22 @@
+<div class="back-button">
+  <button (click)="goBack()">Вернуться</button>
+</div>
+
+<div *ngIf="book">
+  <h2>{{ book.title }}</h2>
+  <img *ngIf="imageUrl; else noImage" [src]="imageUrl" alt="Book image" class="book-image" />
+  <ng-template #noImage>
+    <div class="empty-image">Нет изображения</div>
+  </ng-template>
+
+  <p><strong>Автор:</strong> {{ author?.firstName }} {{ author?.lastName }}</p>
+  <p><strong>Жанр:</strong> {{ getGenreName(book.genre) }}</p>
+  <p><strong>Описание:</strong> {{ book.description }}</p>
+
+  <div *ngIf="isAvailable; else unavailable">
+    <button (click)="checkoutBook()">Взять книгу</button>
+  </div>
+  <ng-template #unavailable>
+    <p>Книга недоступна в библиотеке.</p>
+  </ng-template>
+</div>

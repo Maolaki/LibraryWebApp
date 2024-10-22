@@ -11,32 +11,44 @@ namespace LibraryWebApp.AuthorService.Presentation.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class AuthorsController : ControllerBase
+    public class AuthorController : ControllerBase
     {
         private readonly IAuthorService _authorService;
         private readonly IMapper _mapper;
 
-        public AuthorsController(IAuthorService authorService, IMapper mapper)
+        public AuthorController(IAuthorService authorService, IMapper mapper)
         {
             _authorService = authorService;
             _mapper = mapper;
         }
 
+        [HttpGet("by-name")]
+        public ActionResult<int> GetAllAuthors(string firstName, string lastName)
+        {
+            var authorId = _authorService.GetAuthorId(firstName, lastName);
+
+            return Ok(authorId);
+        }
+
         [HttpGet]
-        [Authorize]
-        public ActionResult<IEnumerable<Author>> GetAllAuthors(int pageNumber = 1, int pageSize = 10)
+        public ActionResult<IEnumerable<AuthorDTO>> GetAllAuthors(int pageNumber = 1, int pageSize = 10)
         {
             var authors = _authorService.GetAllAuthors(pageNumber, pageSize);
-            return Ok(authors);
+
+            var authorsDto = _mapper.Map<IEnumerable<AuthorDTO>>(authors);
+
+            return Ok(authorsDto);
         }
 
         [HttpGet("{id}")]
-        [Authorize]
-        public ActionResult<Author> GetAuthor(int id)
+        public ActionResult<AuthorDTO> GetAuthor(int id)
         {
             var author = _authorService.GetAuthor(id);
             if (author == null) return NotFound();
-            return Ok(author);
+
+            var authorDto = _mapper.Map<AuthorDTO>(author);
+
+            return Ok(authorDto);
         }
 
         [HttpPost]
@@ -87,13 +99,15 @@ namespace LibraryWebApp.AuthorService.Presentation.Controllers
         }
 
         [HttpGet("{id}/books")]
-        [Authorize]
-        public ActionResult<IEnumerable<Book>> GetAllBooksByAuthor(int id, int pageNumber = 1, int pageSize = 10)
+        public ActionResult<IEnumerable<BookDTO>> GetAllBooksByAuthor(int id, int pageNumber = 1, int pageSize = 10)
         {
             var author = _authorService.GetAuthor(id);
             if (author == null) return NotFound();
 
             var books = _authorService.GetAllBooksByAuthor(author, pageNumber, pageSize);
+
+            var booksDto = _mapper.Map<AuthorDTO>(author);
+
             return Ok(books);
         }
     }

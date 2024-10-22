@@ -4,6 +4,7 @@ namespace LibraryWebApp.AuthorService.Domain.Interfaces
 {
     public interface IAuthorService
     {
+        public int GetAuthorId(string firstName, string lastName);
         public IEnumerable<Author> GetAllAuthors(int pageNumber, int pageSize);
 
         public Author GetAuthor(int id);

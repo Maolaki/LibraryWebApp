@@ -1,0 +1,24 @@
+<div class="login-container">
+  <h2>Авторизация</h2>
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <label for="login">Имя или почта:</label>
+    <input type="text" id="login" formControlName="login" />
+    <div *ngIf="loginControl?.invalid && (loginControl?.dirty || loginControl?.touched)">
+      <small *ngIf="loginControl?.errors?.['required']">Поле не должно быть пустым.</small>
+      <small *ngIf="loginControl?.errors?.['minlength']">Поле должно содержать минимум 3 символа.</small>
+      <small *ngIf="loginControl?.errors?.['maxlength']">Поле не должно содержать больше 25 символов.</small>
+    </div>
+
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" formControlName="password" />
+    <div *ngIf="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched)">
+      <small *ngIf="passwordControl?.errors?.['required']">Поле не должно быть пустым.</small>
+      <small *ngIf="passwordControl?.errors?.['minlength']">Поле должно содержать минимум 8 символов.</small>
+      <small *ngIf="passwordControl?.errors?.['maxlength']">Поле не должно содержать более 25 символов.</small>
+      <small *ngIf="passwordControl?.errors?.['pattern']">Поле должно содержать минимум 1 букву, 1 цифру и 1 специальный символ.</small>
+    </div>
+
+    <button type="submit" [disabled]="loginForm.invalid">Войти</button>
+    <p>Ещё нет аккаунта? <a routerLink="/register">Зарегистрироваться!</a></p>
+  </form>
+</div>

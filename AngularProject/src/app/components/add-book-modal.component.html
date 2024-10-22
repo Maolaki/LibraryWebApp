@@ -1,0 +1,50 @@
+<div class="modal-header">
+  <h4 class="modal-title">Добавить новую книгу</h4>
+  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form #addBookForm="ngForm">
+    <div class="form-group">
+      <label for="title">Название книги</label>
+      <input type="text" id="title" class="form-control" [(ngModel)]="book.title" name="title" required>
+    </div>
+    <div class="form-group">
+      <label for="isbn">ISBN</label>
+      <input type="text" class="form-control" [(ngModel)]="book.isbn" name="isbn" required minlength="10" maxlength="13" #isbn="ngModel" />
+      <small *ngIf="isbn.errors?.['minlength'] || isbn.errors?.['maxlength']">
+        ISBN должен содержать от 10 до 13 символов.
+      </small>
+    </div>
+    <div class="form-group">
+      <label for="description">Описание</label>
+      <textarea id="description" class="form-control" [(ngModel)]="book.description" name="description"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="genre">Жанр</label>
+      <select id="genre" class="form-control" [(ngModel)]="book.genre" name="genre">
+        <option *ngFor="let genre of genres" [value]="genre.id">{{ genre.name }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="author">Автор</label>
+      <select (change)="onAuthorSelected($event)" class="form-control" required>
+        <option value="" disabled selected>Выберите автора</option>
+        <option *ngFor="let author of authors" [value]="author.firstName + ',' + author.lastName">
+          {{ author.firstName }} {{ author.lastName }}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="image">Загрузить изображение</label>
+      <input type="file" id="image" class="form-control" (change)="onImageSelected($event)">
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Отмена</button>
+  <button type="button" class="btn btn-primary" (click)="save()">Добавить книгу</button>
+</div>

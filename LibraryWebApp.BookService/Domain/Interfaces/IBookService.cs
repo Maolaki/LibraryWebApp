@@ -1,15 +1,17 @@
 ﻿using LibraryWebApp.BookService.Application.DTOs;
+using LibraryWebApp.BookService.Application.Services;
 using LibraryWebApp.BookService.Domain.Entities;
+using LibraryWebApp.BookService.Domain.Enums;
 
 namespace LibraryWebApp.BookService.Domain.Interfaces
 {
     public interface IBookService
     {
         public IEnumerable<Book> GetAllBooks(int pageNumber, int pageSize);
-
+        public IEnumerable<Book> GetAllBooksWithFilters(int pageNumber, int pageSize, string title, BookGenre? genre, int? authorId);
         public Book GetBook(int id);
-        public IEnumerable<Book> GetBookByISBN(string isbn);
-
+        public IEnumerable<Book> GetBooksByISBN(string isbn);
+        public int GetAvailableCopies(string isbn);
         public void AddBook(Book book);
 
         public void UpdateBook(Book book);

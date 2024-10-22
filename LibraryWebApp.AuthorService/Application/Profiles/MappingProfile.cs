@@ -9,7 +9,8 @@ namespace LibraryWebApp.AuthorService.Application.Profiles
         public MappingProfile() 
         {
             CreateMap<Author, Author>();
-            CreateMap<AuthorDTO, Author>();
+            CreateMap<AuthorDTO, Author>().ReverseMap();
+            CreateMap<BookDTO, Book>().ReverseMap();
         }
     }
 }

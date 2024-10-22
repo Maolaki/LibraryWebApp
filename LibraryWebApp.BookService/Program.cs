@@ -119,6 +119,8 @@ namespace LibraryWebApp.BookService
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.MapControllers();

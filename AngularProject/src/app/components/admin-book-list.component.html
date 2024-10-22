@@ -1,0 +1,35 @@
+<div class="admin-page">
+  <button class="logout-btn" (click)="logout()">Выход</button>
+  <button class="add-book-btn" (click)="openAddBookModal()">Добавить книгу</button>
+
+  <div class="filter-section">
+    <input type="text" [(ngModel)]="titleFilter" placeholder="Поиск по названию" class="search-input" />
+    <select [(ngModel)]="genreFilter" (change)="onGenreChange(genreFilter)" class="genre-select">
+      <option value="">Все жанры</option>
+      <option *ngFor="let genre of genres" [value]="genre">{{ genre }}</option>
+    </select>
+    <button (click)="onSearch()" class="search-btn">Поиск</button>
+  </div>
+
+  <div class="book-grid">
+    <div class="book-card" *ngFor="let book of books">
+      <img *ngIf="getImage(book.id); else noImage" [src]="getImage(book.id)" alt="Book image" class="book-image" />
+      <ng-template #noImage>
+        <div class="empty-image">Нет изображения</div>
+      </ng-template>
+
+      <h3 class="book-title">{{ book.title }}</h3>
+      <p class="book-genre"><strong>Жанр:</strong> {{ getGenreName(book.genre) }}</p>
+
+      <div class="actions">
+        <button (click)="openEditModal(book)" class="edit-btn">Редактировать</button>
+        <button (click)="deleteBook(book.id)" class="delete-btn">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="totalCount > pageSize" class="pagination">
+    <button (click)="onPageChange(pageNumber - 1)" [disabled]="pageNumber === 1" class="pagination-btn">Предыдущая</button>
+    <button (click)="onPageChange(pageNumber + 1)" [disabled]="pageNumber * pageSize >= totalCount" class="pagination-btn">Следующая</button>
+  </div>
+</div>
