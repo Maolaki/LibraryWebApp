@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { UserDTO } from '../models/user-dto.model';
 import { LoginDTO } from '../models/login-dto.model';
-import { AuthenticatedResponse } from '../models/authenticated-response.model';
+import { AuthenticatedDTO } from '../models/authenticated-dto.model';
 import { UserRole } from '../enums/user-role.enum';
 
 @Injectable({
@@ -18,12 +18,12 @@ export class AuthService {
     return this.http.post<void>(`${this.apiUrl}/Auth/register`, userDto);
   }
 
-  login(loginDto: LoginDTO): Observable<AuthenticatedResponse> {
-    return this.http.post<AuthenticatedResponse>(`${this.apiUrl}/Auth/login`, loginDto);
+  login(loginDto: LoginDTO): Observable<AuthenticatedDTO> {
+    return this.http.post<AuthenticatedDTO>(`${this.apiUrl}/Auth/login`, loginDto);
   }
 
-  refreshToken(authenticatedResponse: AuthenticatedResponse): Observable<AuthenticatedResponse> {
-    return this.http.post<AuthenticatedResponse>(`${this.apiUrl}/Token/refresh`, authenticatedResponse);
+  refreshToken(authenticatedResponse: AuthenticatedDTO): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/Token/refresh`, authenticatedResponse);
   }
 
   revokeToken(refreshToken: string): void {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -15,9 +15,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LibraryWebApp.ApiGatewayYARP\LibraryWebApp.ApiGatewayYARP.csproj" />
-    <ProjectReference Include="..\LibraryWebApp.AuthorService\LibraryWebApp.AuthorService.csproj" />
-    <ProjectReference Include="..\LibraryWebApp.AuthService\LibraryWebApp.AuthService.csproj" />
-    <ProjectReference Include="..\LibraryWebApp.BookService\LibraryWebApp.BookService.csproj" />
+    <ProjectReference Include="..\Services\AuthorService\AuthorService.API\AuthorService.API.csproj" />
+    <ProjectReference Include="..\Services\AuthService\AuthService.API\AuthService.API.csproj" />
+    <ProjectReference Include="..\Services\BookService\BookService.API\BookService.API.csproj" />
   </ItemGroup>
 
 </Project>

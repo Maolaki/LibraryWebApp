@@ -23,10 +23,6 @@ namespace LibraryWebApp.ApiGatewayYARP
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Gateway");
-
-                    c.SwaggerEndpoint("/auth-service/swagger/v1/swagger.json", "Auth Service");
-                    c.SwaggerEndpoint("/author-service/swagger/v1/swagger.json", "Author Service");
-                    c.SwaggerEndpoint("/book-service/swagger/v1/swagger.json", "Book Service");
                 });
             }
 

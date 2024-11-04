@@ -1,223 +1,201 @@
-﻿using AutoMapper;
-using LibraryWebApp.AuthorService.Application.DTOs;
-using LibraryWebApp.AuthorService.Application.Services;
+﻿using LibraryWebApp.AuthorService.Application.UseCases;
 using LibraryWebApp.AuthorService.Domain.Entities;
-using LibraryWebApp.AuthorService.Domain.Enums;
 using LibraryWebApp.AuthorService.Domain.Interfaces;
-using LibraryWebApp.AuthorService.Presentation.Controllers;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.Linq.Expressions;
 
-namespace UnitTests
+namespace LibraryWebApp.UnitTests
 {
-    public class AuthorsControllerTests
+    public class UseCasesTests
     {
-        private readonly Mock<IAuthorService> _mockAuthorService;
-        private readonly Mock<IMapper> _mockMapper;
-        private readonly AuthorController _controller;
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+        private readonly Mock<IRepository<Author>> _authorRepositoryMock;
+        private readonly Author _testAuthor;
 
-        public AuthorsControllerTests()
+        public UseCasesTests()
         {
-            _mockAuthorService = new Mock<IAuthorService>();
-            _mockMapper = new Mock<IMapper>();
-            _controller = new AuthorController(_mockAuthorService.Object, _mockMapper.Object);
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
+            _authorRepositoryMock = new Mock<IRepository<Author>>();
+            _testAuthor = new Author { Id = 1, FirstName = "John", LastName = "Doe" };
+
+            _unitOfWorkMock.Setup(u => u.Authors).Returns(_authorRepositoryMock.Object);
         }
 
         [Fact]
-        public void AddAuthor_ValidAuthorDTO_ReturnsOkResult_AndCallsServiceMethod()
+        public void AddAuthor_ShouldAddAuthor()
         {
-            var authorDto = new AuthorDTO
-            {
-                FirstName = "AWA",
-                LastName = "WAWA",
-                DateOfBirth = new DateOnly(1980, 5, 15),
-                Country = Country.Algeria
-            };
-            var author = new Author
-            {
-                Id = 1,
-                FirstName = "AWA",
-                LastName = "WAWA",
-                DateOfBirth = new DateOnly(1980, 5, 15),
-                Country = Country.Algeria
-            };
+            // Arrange
+            var useCase = new AddAuthorUseCase(_unitOfWorkMock.Object);
 
-            _mockMapper.Setup(m => m.Map<Author>(authorDto)).Returns(author);
+            // Act
+            useCase.Execute(_testAuthor);
 
-            var result = _controller.AddAuthor(authorDto);
-
-            var okResult = Assert.IsType<OkResult>(result);
-            _mockAuthorService.Verify(service => service.AddAuthor(author), Times.Once);
+            // Assert
+            _authorRepositoryMock.Verify(a => a.Create(It.IsAny<Author>()), Times.Once);
+            _unitOfWorkMock.Verify(u => u.Save(), Times.Once);
         }
 
         [Fact]
-        public void UpdateAuthor_ValidAuthorDTO_ReturnsOkResult_AndCallsServiceMethod()
+        public void UpdateAuthor_ShouldUpdateExistingAuthor()
         {
-            var authorDto = new AuthorDTO
-            {
-                FirstName = "Qer",
-                LastName = "Der",
-                DateOfBirth = new DateOnly(1980, 5, 15),
-                Country = Country.Argentina
-            };
-            var author = new Author
-            {
-                Id = 1,
-                FirstName = "Qer",
-                LastName = "Der",
-                DateOfBirth = new DateOnly(1980, 5, 15),
-                Country = Country.Argentina
-            };
+            // Arrange
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns(_testAuthor);
+            var useCase = new UpdateAuthorUseCase(_unitOfWorkMock.Object);
+            var updatedAuthor = new Author { Id = 1, FirstName = "Jane", LastName = "Doe" };
 
-            _mockMapper.Setup(m => m.Map<Author>(authorDto)).Returns(author);
+            // Act
+            useCase.Execute(updatedAuthor);
 
-            var result = _controller.UpdateAuthor(1, authorDto);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal("Author updated successfully.", okResult.Value);
-            _mockAuthorService.Verify(service => service.UpdateAuthor(author), Times.Once);
+            // Assert
+            _unitOfWorkMock.Verify(u => u.Authors.Update(It.IsAny<Author>(), It.IsAny<Author>()), Times.Once);
+            _unitOfWorkMock.Verify(u => u.Save(), Times.Once);
         }
 
         [Fact]
-        public void GetAllAuthors_ReturnsOkResult_WithAuthorDTOList_AndCallsServiceMethod()
+        public void UpdateAuthor_ShouldThrowNotFoundException_WhenAuthorDoesNotExist()
         {
-            var authorsList = new List<Author>
-            {
-                new Author
-                {
-                    Id = 1,
-                    FirstName = "Jo",
-                    LastName = "Jo",
-                    DateOfBirth = new DateOnly(1970, 1, 1),
-                    Country = Country.Algeria,
-                    Books = new List<Book>()
-                }
-            };
+            // Arrange
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns((Author)null);
+            var useCase = new UpdateAuthorUseCase(_unitOfWorkMock.Object);
+            var updatedAuthor = new Author { Id = 999, FirstName = "Jane", LastName = "Doe" };
 
-                    var authorDtos = new List<AuthorDTO>
-            {
-                new AuthorDTO
-                {
-                    Id = 1,
-                    FirstName = "Jo",
-                    LastName = "Jo",
-                    Country = Country.Australia,
-                }
-            };
-
-            _mockAuthorService.Setup(service => service.GetAllAuthors(It.IsAny<int>(), It.IsAny<int>())).Returns(authorsList);
-            _mockMapper.Setup(mapper => mapper.Map<IEnumerable<AuthorDTO>>(authorsList)).Returns(authorDtos);
-
-            var result = _controller.GetAllAuthors(1, 10);
-
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnValue = Assert.IsType<List<AuthorDTO>>(okResult.Value);
-            Assert.Equal(authorDtos, returnValue);
-            _mockAuthorService.Verify(service => service.GetAllAuthors(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
-            _mockMapper.Verify(mapper => mapper.Map<IEnumerable<AuthorDTO>>(authorsList), Times.Once);
+            // Act & Assert
+            Assert.Throws<DirectoryNotFoundException>(() => useCase.Execute(updatedAuthor));
         }
 
         [Fact]
-        public void GetAuthorId_ReturnsAuthorId_WhenAuthorExists()
+        public void GetAuthor_ShouldReturnExistingAuthor()
         {
-            var firstName = "Jo";
-            var lastName = "Jo";
-            var author = new Author
-            {
-                Id = 1,
-                FirstName = firstName,
-                LastName = lastName
-            };
+            // Arrange
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns(_testAuthor);
+            var useCase = new GetAuthorUseCase(_unitOfWorkMock.Object);
 
-            var authors = new List<Author> { author }.AsQueryable();
+            // Act
+            var result = useCase.Execute(1);
 
-            var mockAuthorRepository = new Mock<IRepository<Author>>();
-            mockAuthorRepository.Setup(repo => repo.GetAll()).Returns(authors);
-
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(uow => uow.Authors).Returns(mockAuthorRepository.Object);
-
-            var authorService = new AuthorService(mockUnitOfWork.Object);
-
-            var result = authorService.GetAuthorId(firstName, lastName);
-
-            Assert.Equal(author.Id, result);
-            mockAuthorRepository.Verify(repo => repo.GetAll(), Times.Once);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(_testAuthor.Id, result.Id);
         }
 
         [Fact]
-        public void DeleteAuthor_AuthorExists_ReturnsOkResult_AndCallsServiceMethod()
+        public void GetAuthor_ShouldThrowNotFoundException_WhenAuthorDoesNotExist()
         {
-            var author = new Author
-            {
-                Id = 1,
-                FirstName = "Jo",
-                LastName = "Jo",
-                DateOfBirth = new DateOnly(1980, 5, 15),
-                Country = Country.China
-            };
-            _mockAuthorService.Setup(service => service.GetAuthor(1)).Returns(author);
+            // Arrange
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns((Author)null);
+            var useCase = new GetAuthorUseCase(_unitOfWorkMock.Object);
 
-            var result = _controller.DeleteAuthor(1);
-
-            var okResult = Assert.IsType<OkResult>(result);
-            _mockAuthorService.Verify(service => service.DeleteAuthor(author), Times.Once);
+            // Act & Assert
+            Assert.Throws<DirectoryNotFoundException>(() => useCase.Execute(999));
         }
 
         [Fact]
-        public void DeleteAuthor_AuthorDoesNotExist_ReturnsNotFound_AndDoesNotCallDelete()
+        public void GetAuthorId_ShouldReturnExistingAuthorId()
         {
-            _mockAuthorService.Setup(service => service.GetAuthor(1)).Returns((Author)null);
+            // Arrange
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns(_testAuthor);
+            var useCase = new GetAuthorIdUseCase(_unitOfWorkMock.Object);
 
-            var result = _controller.DeleteAuthor(1);
+            // Act
+            var result = useCase.Execute("John", "Doe");
 
-            Assert.IsType<NotFoundResult>(result);
-            _mockAuthorService.Verify(service => service.DeleteAuthor(It.IsAny<Author>()), Times.Never);
+            // Assert
+            Assert.Equal(_testAuthor.Id, result);
         }
 
         [Fact]
-        public void GetAllBooksByAuthor_AuthorExists_ReturnsOkResult_WithBooks_AndCallsServiceMethods()
+        public void GetAuthorId_ShouldThrowNotFoundException_WhenAuthorDoesNotExist()
         {
-            var author = new Author
-            {
-                Id = 1,
-                FirstName = "Jo",
-                LastName = "Jo",
-                DateOfBirth = new DateOnly(1980, 5, 15),
-                Country = Country.China
-            };
-            var booksList = new List<Book> { new Book
-            {
-                Id = 1,
-                ISBN = "978-3-16-148410-0",
-                Title = "The Great Book",
-                Description = "Cool book",
-                Genre = BookGenre.Fiction,
-                AuthorId = 1,
-                UserId = 2,
-                CheckoutDateTime = DateTime.Now.AddDays(-2),
-                ReturnDateTime = DateTime.Now.AddDays(7)
-            }};
-            _mockAuthorService.Setup(service => service.GetAuthor(1)).Returns(author);
-            _mockAuthorService.Setup(service => service.GetAllBooksByAuthor(author, It.IsAny<int>(), It.IsAny<int>())).Returns(booksList);
+            // Arrange
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns((Author)null);
+            var useCase = new GetAuthorIdUseCase(_unitOfWorkMock.Object);
 
-            var result = _controller.GetAllBooksByAuthor(1);
-
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnValue = Assert.IsType<List<Book>>(okResult.Value);
-            Assert.Equal(booksList, returnValue);
-            _mockAuthorService.Verify(service => service.GetAllBooksByAuthor(author, It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+            // Act & Assert
+            Assert.Throws<DirectoryNotFoundException>(() => useCase.Execute("Unknown", "Author"));
         }
 
         [Fact]
-        public void GetAllBooksByAuthor_AuthorDoesNotExist_ReturnsNotFound_AndDoesNotCallBooksService()
+        public void GetAllAuthors_ShouldReturnPagedAuthors()
         {
-            _mockAuthorService.Setup(service => service.GetAuthor(1)).Returns((Author)null);
+            // Arrange
+            var authors = new List<Author> { _testAuthor };
+            _unitOfWorkMock.Setup(u => u.Authors.GetAll())
+                .Returns(authors.AsQueryable());
+            var useCase = new GetAllAuthorsUseCase(_unitOfWorkMock.Object);
 
-            var result = _controller.GetAllBooksByAuthor(1);
+            // Act
+            var result = useCase.Execute(1, 10).ToList();
 
-            Assert.IsType<NotFoundResult>(result.Result);
-            _mockAuthorService.Verify(service => service.GetAllBooksByAuthor(It.IsAny<Author>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            // Assert
+            Assert.Single(result);
+            Assert.Equal(_testAuthor.Id, result[0].Id);
+        }
+
+        [Fact]
+        public void DeleteAuthor_ShouldRemoveExistingAuthor()
+        {
+            // Arrange
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns(_testAuthor);
+            var useCase = new DeleteAuthorUseCase(_unitOfWorkMock.Object);
+
+            // Act
+            useCase.Execute(_testAuthor.Id);
+
+            // Assert
+            _unitOfWorkMock.Verify(u => u.Authors.Delete(It.IsAny<Author>()), Times.Once);
+            _unitOfWorkMock.Verify(u => u.Save(), Times.Once);
+        }
+
+        [Fact]
+        public void DeleteAuthor_ShouldThrowNotFoundException_WhenAuthorDoesNotExist()
+        {
+            // Arrange
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns((Author)null);
+            var useCase = new DeleteAuthorUseCase(_unitOfWorkMock.Object);
+
+            // Act & Assert
+            Assert.Throws<DirectoryNotFoundException>(() => useCase.Execute(999));
+        }
+
+        [Fact]
+        public void GetAllBooksByAuthor_ShouldReturnBooks_WhenAuthorExists()
+        {
+            // Arrange
+            var book1 = new Book { Id = 1, Title = "Book 1", Author = _testAuthor };
+            var book2 = new Book { Id = 2, Title = "Book 2", Author = _testAuthor };
+            var books = new List<Book> { book1, book2 };
+
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns(_testAuthor);
+            _unitOfWorkMock.Setup(u => u.Books.GetAll())
+                .Returns(books.AsQueryable());
+            var useCase = new GetAllBooksByAuthorUseCase(_unitOfWorkMock.Object);
+
+            // Act
+            var result = useCase.Execute(_testAuthor.Id, 1, 10).ToList();
+
+            // Assert
+            Assert.Equal(2, result.Count);
+        }
+
+        [Fact]
+        public void GetAllBooksByAuthor_ShouldThrowNotFoundException_WhenAuthorDoesNotExist()
+        {
+            // Arrange
+            _unitOfWorkMock.Setup(u => u.Authors.Get(It.IsAny<Expression<Func<Author, bool>>>()))
+                .Returns((Author)null);
+            var useCase = new GetAllBooksByAuthorUseCase(_unitOfWorkMock.Object);
+
+            // Act & Assert
+            Assert.Throws<DirectoryNotFoundException>(() => useCase.Execute(999, 1, 10));
         }
     }
 }

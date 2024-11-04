@@ -5,7 +5,7 @@ using LibraryWebApp.AuthorService.Infrastructure.Context;
 using LibraryWebApp.AuthorService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace UnitTests
+namespace LibraryWebApp.UnitTests
 {
     public class AuthorRepositoryTests
     {
@@ -20,34 +20,14 @@ namespace UnitTests
                 .Options;
 
             _context = new ApplicationContext(options);
-            _mapper = new Mapper(new MapperConfiguration(cfg => {}));
+            _mapper = new Mapper(new MapperConfiguration(cfg => { }));
             _repository = new AuthorRepository(_context, _mapper);
         }
 
         [Fact]
         public void Delete_ExistingAuthor_RemovesAuthorFromContext()
         {
-            var author = new Author
-            {
-                Id = 3,
-                FirstName = "John",
-                LastName = "Doe",
-                DateOfBirth = new DateOnly(1980, 5, 15),
-                Country = Country.China
-            };
-
-            _context.Authors.Add(author);
-            _context.SaveChanges();
-
-            _repository.Delete(author);
-            _context.SaveChanges();
-
-            Assert.Empty(_context.Authors);
-        }
-
-        [Fact]
-        public void Create_ValidAuthor_AddsAuthorToContext()
-        {
+            // Arrange
             var author = new Author
             {
                 Id = 1,
@@ -57,29 +37,52 @@ namespace UnitTests
                 Country = Country.China
             };
 
-            _repository.Create(author);
-            _context.SaveChanges(); 
+            var allAuthors = _context.Authors.ToList();
+            if (allAuthors.Any())
+                _context.Authors.RemoveRange(allAuthors);
+            _context.Authors.Add(author);
+            _context.SaveChanges();
 
-            var authorsInDb = _context.Authors.ToList();
-            Assert.Single(authorsInDb);
-            Assert.Equal(author.FirstName, authorsInDb[0].FirstName);
+            // Act
+            _repository.Delete(author);
+            _context.SaveChanges();
+
+            // Assert
+            Assert.Empty(_context.Authors);
         }
 
         [Fact]
-        public void Delete_NonExistingAuthor_ThrowsDirectoryNotFoundException()
+        public void Get_ExistingAuthor_ReturnsAuthor()
         {
-            var nonExistingAuthor = new Author
+            // Arrange
+            var author = new Author
             {
-                Id = -999,
+                Id = 1,
                 FirstName = "John",
                 LastName = "Doe",
                 DateOfBirth = new DateOnly(1980, 5, 15),
                 Country = Country.China
             };
 
-            Assert.Throws<DirectoryNotFoundException>(() => _repository.Delete(nonExistingAuthor));
+            _context.Authors.Add(author);
+            _context.SaveChanges();
+
+            // Act
+            var result = _repository.Get(a => a.Id == author.Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(author.FirstName, result.FirstName);
+        }
+
+        [Fact]
+        public void Get_NonExistingAuthor_ReturnsNull()
+        {
+            // Act
+            var result = _repository.Get(a => a.Id == -1);
+
+            // Assert
+            Assert.Null(result);
         }
     }
-
-
 }

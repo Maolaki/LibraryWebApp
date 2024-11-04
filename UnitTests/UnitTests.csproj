@@ -19,10 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LibraryWebApp.ApiGatewayYARP\LibraryWebApp.ApiGatewayYARP.csproj" />
-    <ProjectReference Include="..\LibraryWebApp.AuthorService\LibraryWebApp.AuthorService.csproj" />
-    <ProjectReference Include="..\LibraryWebApp.AuthService\LibraryWebApp.AuthService.csproj" />
-    <ProjectReference Include="..\LibraryWebApp.BookService\LibraryWebApp.BookService.csproj" />
+	<ProjectReference Include="..\Services\AuthorService\AuthorService.API\AuthorService.API.csproj" />
+    <ProjectReference Include="..\Services\AuthorService\AuthorService.Application\AuthorService.Application.csproj" />
+    <ProjectReference Include="..\Services\AuthorService\AuthorService.Domain\AuthorService.Domain.csproj" />
+    <ProjectReference Include="..\Services\AuthorService\AuthorService.Infrastructure\AuthorService.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
