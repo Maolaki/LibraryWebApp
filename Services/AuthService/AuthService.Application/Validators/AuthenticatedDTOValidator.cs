@@ -1,11 +1,14 @@
 ﻿using FluentValidation;
-using LibraryWebApp.AuthService.Domain.Entities;
+using LibraryWebApp.AuthService.Application.Entities;
 
-public class AuthenticatedDTOValidator : AbstractValidator<AuthenticatedDTO>
+namespace LibraryWebApp.AuthService.Application.Validators
 {
-    public AuthenticatedDTOValidator()
+    public class AuthenticatedDTOValidator : AbstractValidator<AuthenticatedDTO>
     {
-        RuleFor(x => x.AccessToken).NotEmpty().WithMessage("AccessToken is required.");
-        RuleFor(x => x.RefreshToken).NotEmpty().WithMessage("RefreshToken is required.");
+        public AuthenticatedDTOValidator()
+        {
+            RuleFor(x => x.AccessToken).NotEmpty().WithMessage("AccessToken is required.");
+            RuleFor(x => x.RefreshToken).NotEmpty().WithMessage("RefreshToken is required.");
+        }
     }
 }

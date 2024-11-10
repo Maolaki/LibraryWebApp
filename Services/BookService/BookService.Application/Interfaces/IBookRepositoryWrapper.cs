@@ -1,6 +1,6 @@
 ﻿using LibraryWebApp.BookService.Application.DTOs;
 
-namespace LibraryWebApp.BookService.Domain.Interfaces
+namespace LibraryWebApp.BookService.Application.Interfaces
 {
     public interface IBookRepositoryWrapper
     {

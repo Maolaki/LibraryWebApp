@@ -1,4 +1,4 @@
-﻿namespace LibraryWebApp.AuthService.Domain.Entities
+﻿namespace LibraryWebApp.AuthService.Application.Entities
 {
     public class AuthenticatedDTO
     {

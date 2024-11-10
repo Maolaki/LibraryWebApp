@@ -3,7 +3,7 @@ using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace AuthorService.API.Filters
+namespace AuthorService.Application.Filters
 {
     public class ValidateModelAttribute : ActionFilterAttribute
     {

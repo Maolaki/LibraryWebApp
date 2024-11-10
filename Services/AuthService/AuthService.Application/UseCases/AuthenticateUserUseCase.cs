@@ -1,4 +1,5 @@
 ﻿using LibraryWebApp.AuthService.Application.DTOs;
+using LibraryWebApp.AuthService.Application.Entities;
 using LibraryWebApp.AuthService.Domain.Entities;
 using LibraryWebApp.AuthService.Domain.Interfaces;
 using System.Security.Claims;

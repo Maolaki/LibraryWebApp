@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using LibraryWebApp.BookService.Application.DTOs;
-using LibraryWebApp.BookService.Domain.Entities;
-using LibraryWebApp.BookService.Domain.Interfaces;
+using LibraryWebApp.BookService.Application.Interfaces;
 using LibraryWebApp.BookService.Infrastructure.Context;
 using Microsoft.Extensions.Caching.Memory;
 

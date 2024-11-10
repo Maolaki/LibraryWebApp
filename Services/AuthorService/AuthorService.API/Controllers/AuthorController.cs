@@ -1,4 +1,4 @@
-﻿using AuthorService.API.Filters;
+﻿using AuthorService.Application.Filters;
 using AutoMapper;
 using LibraryWebApp.AuthorService.Application.DTOs;
 using LibraryWebApp.AuthorService.Application.UseCases;
@@ -7,7 +7,7 @@ using LibraryWebApp.AuthorService.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AuthorService.API.Controllers
+namespace LibraryWebApp.AuthorService.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]

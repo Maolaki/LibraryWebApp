@@ -1,4 +1,4 @@
-﻿using LibraryWebApp.AuthService.Domain.Entities;
+﻿using LibraryWebApp.AuthService.Application.Entities;
 using LibraryWebApp.AuthService.Domain.Interfaces;
 
 namespace LibraryWebApp.AuthService.Application.UseCases

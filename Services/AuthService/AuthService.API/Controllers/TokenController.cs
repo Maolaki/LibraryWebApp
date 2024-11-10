@@ -1,6 +1,6 @@
 ﻿using AuthService.API.Filters;
+using LibraryWebApp.AuthService.Application.Entities;
 using LibraryWebApp.AuthService.Application.UseCases;
-using LibraryWebApp.AuthService.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
