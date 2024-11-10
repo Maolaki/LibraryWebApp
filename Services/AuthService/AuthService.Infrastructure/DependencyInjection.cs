@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using LibraryWebApp.AuthService.Application.UseCases;
 using LibraryWebApp.AuthService.Domain.Interfaces;
-using LibraryWebApp.AuthService.Application.Services;
+using LibraryWebApp.AuthService.Infrastructure.Services;
 using LibraryWebApp.AuthService.Application.Profiles;
 using LibraryWebApp.AuthService.Application.Entities;
 using FluentValidation;
 using LibraryWebApp.AuthService.Application.Validators;
-using AuthService.API.Filters;
+using LibraryWebApp.AuthService.Application.Filters;
+
 namespace LibraryWebApp.AuthService.Infrastructure
 {
     public static class DependencyInjection

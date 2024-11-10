@@ -4,7 +4,7 @@ using LibraryWebApp.AuthorService.Application.Profiles;
 using LibraryWebApp.AuthorService.Application.UseCases;
 using FluentValidation;
 using LibraryWebApp.AuthorService.Application.Validators;
-using AuthorService.Application.Filters;
+using LibraryWebApp.AuthorService.Application.Filters;
 
 namespace LibraryWebApp.AuthorService.Infrastructure
 {

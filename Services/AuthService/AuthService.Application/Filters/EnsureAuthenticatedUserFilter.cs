@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AuthService.API.Filters
+namespace LibraryWebApp.AuthService.Application.Filters
 {
     public class EnsureAuthenticatedUserFilter : IActionFilter
     {

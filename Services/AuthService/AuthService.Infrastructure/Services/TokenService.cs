@@ -1,6 +1,4 @@
-﻿using LibraryWebApp.AuthService.Domain.Entities;
-using LibraryWebApp.AuthService.Domain.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using LibraryWebApp.AuthService.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -8,7 +6,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace LibraryWebApp.AuthService.Application.Services
+namespace LibraryWebApp.AuthService.Infrastructure.Services
 {
     public class TokenService : ITokenService
     {

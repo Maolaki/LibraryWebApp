@@ -1,4 +1,4 @@
-﻿using AuthService.API.Filters;
+﻿using LibraryWebApp.AuthService.Application.Filters;
 using LibraryWebApp.AuthService.Application.Entities;
 using LibraryWebApp.AuthService.Application.UseCases;
 using Microsoft.AspNetCore.Authorization;

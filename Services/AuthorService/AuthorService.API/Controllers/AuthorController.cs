@@ -1,4 +1,4 @@
-﻿using AuthorService.Application.Filters;
+﻿using LibraryWebApp.AuthorService.Application.Filters;
 using AutoMapper;
 using LibraryWebApp.AuthorService.Application.DTOs;
 using LibraryWebApp.AuthorService.Application.UseCases;
