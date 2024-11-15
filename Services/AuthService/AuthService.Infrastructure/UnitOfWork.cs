@@ -36,29 +36,9 @@ namespace LibraryWebApp.AuthService.Infrastructure
             }
         }
 
-        public void Save()
+        public async Task<int> SaveAsync()
         {
-            _context.SaveChanges();
-        }
-
-        private bool disposed = false;
-
-        public virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    _context.Dispose();
-                }
-                this.disposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            return await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,48 +1,42 @@
-﻿using LibraryWebApp.AuthService.Application.Filters;
-using LibraryWebApp.AuthService.Application.Entities;
+﻿using MediatR;
 using LibraryWebApp.AuthService.Application.UseCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using LibraryWebApp.AuthService.Application.Entities;
+using LibraryWebApp.AuthService.API.Filters;
 
 [Route("[controller]")]
 [ApiController]
 public class TokenController : ControllerBase
 {
-    private readonly RefreshTokensUseCase _refreshTokensUseCase;
-    private readonly RevokeTokenUseCase _revokeTokenUseCase;
-    private readonly RevokeAllTokensUseCase _revokeAllTokensUseCase;
+    private readonly IMediator _mediator;
 
-    public TokenController(
-        RefreshTokensUseCase refreshTokensUseCase,
-        RevokeTokenUseCase revokeTokenUseCase,
-        RevokeAllTokensUseCase revokeAllTokensUseCase)
+    public TokenController(IMediator mediator)
     {
-        _refreshTokensUseCase = refreshTokensUseCase;
-        _revokeTokenUseCase = revokeTokenUseCase;
-        _revokeAllTokensUseCase = revokeAllTokensUseCase;
-    }
-
-    [HttpPost("refresh")]
-    [ServiceFilter(typeof(ValidateModelAttribute))]
-    public IActionResult Refresh([FromBody] AuthenticatedDTO authenticatedDTO)
-    {
-        var result = _refreshTokensUseCase.Execute(authenticatedDTO);
-        return Ok(result);
+        _mediator = mediator;
     }
 
     [HttpPost("revoke")]
     [Authorize, ServiceFilter(typeof(EnsureAuthenticatedUserFilter))]
-    public IActionResult Revoke([FromBody] string refreshToken)
+    public async Task<IActionResult> RevokeToken([FromBody] string refreshToken)
     {
-        _revokeTokenUseCase.Execute(refreshToken, User);
+        await _mediator.Send(new RevokeTokenCommand(refreshToken, User));
         return Ok();
     }
 
     [HttpPost("revoke-all")]
     [Authorize, ServiceFilter(typeof(EnsureAuthenticatedUserFilter))]
-    public IActionResult RevokeAll()
+    public async Task<IActionResult> RevokeAllTokens()
     {
-        _revokeAllTokensUseCase.Execute(User);
+        await _mediator.Send(new RevokeAllTokensCommand(User));
         return Ok();
+    }
+
+    [HttpPost("refresh")]
+    [Authorize, ServiceFilter(typeof(ValidateModelAttribute))]
+    public async Task<IActionResult> RefreshTokens([FromBody] AuthenticatedDTO authenticatedResponse)
+    {
+        var newAccessToken = await _mediator.Send(new RefreshTokensCommand(authenticatedResponse));
+        return Ok(new { AccessToken = newAccessToken });
     }
 }

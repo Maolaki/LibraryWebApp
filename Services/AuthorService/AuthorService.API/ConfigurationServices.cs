@@ -1,10 +1,10 @@
 ﻿using LibraryWebApp.AuthorService.Infrastructure.Context;
-using LibraryWebApp.AuthorService.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using LibraryWebApp.AuthorService.API;
 
 namespace LibraryWebApp.AuthorService
 {

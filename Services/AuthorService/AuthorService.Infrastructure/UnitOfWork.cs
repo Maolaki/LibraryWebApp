@@ -21,7 +21,9 @@ namespace LibraryWebApp.AuthorService.Infrastructure
 
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<MappingProfile>(); 
+                cfg.AddProfile<AuthorToAuthorDTOProfile>();
+                cfg.AddProfile<AuthorToAuthorProfile>();
+                cfg.AddProfile<BookToBookDTOProfile>();
             });
 
             mapper = config.CreateMapper();
@@ -57,29 +59,9 @@ namespace LibraryWebApp.AuthorService.Infrastructure
             }
         }
 
-        public void Save()
+        public async Task<int> SaveAsync()
         {
-            _context.SaveChanges();
-        }
-
-        private bool disposed = false;
-
-        public virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    _context.Dispose();
-                }
-                this.disposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            return await _context.SaveChangesAsync();
         }
     }
 }

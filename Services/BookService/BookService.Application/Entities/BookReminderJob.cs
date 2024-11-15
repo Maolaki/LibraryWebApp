@@ -1,4 +1,4 @@
-﻿using LibraryWebApp.BookService.Application.Interfaces;
+﻿using LibraryWebApp.BookService.Application.DTOs;
 using LibraryWebApp.BookService.Domain.Interfaces;
 using Quartz;
 
@@ -6,10 +6,10 @@ namespace LibraryWebApp.BookService.Application.Entities
 {
     public class BookReminderJob : IJob
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork<ImageDTO> _unitOfWork;
         private readonly IEmailService _emailService;
 
-        public BookReminderJob(IUnitOfWork unitOfWork, IEmailService emailService)
+        public BookReminderJob(IUnitOfWork<ImageDTO> unitOfWork, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _emailService = emailService;
@@ -17,13 +17,15 @@ namespace LibraryWebApp.BookService.Application.Entities
 
         public async Task Execute(IJobExecutionContext context)
         {
-            var overdueBooks = _unitOfWork.Books.GetAll()
+            var overdueBooks = await _unitOfWork.Books.GetAllAsync();
+
+            var filteredBooks = overdueBooks
                 .Where(b => b.ReturnDateTime < DateTime.Now)
                 .ToList();
 
             foreach (var book in overdueBooks)
             {
-                var user = _unitOfWork.Users.Get(u => u.Id == book.UserId);
+                var user = await _unitOfWork.Users.GetAsync(u => u.Id == book.UserId);
                 if (user != null && !string.IsNullOrEmpty(user.Email))
                 {
                     var subject = "Книжный долг!";

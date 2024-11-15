@@ -14,23 +14,15 @@ namespace LibraryWebApp.AuthorService.Infrastructure.Context
         {
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseLazyLoadingProxies();
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Author>()
-                .HasMany(a => a.Books)
-                .WithOne(b => b.Author)
-                .HasForeignKey(b => b.AuthorId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Books)
-                .WithOne(b => b.User)
-                .HasForeignKey(b => b.UserId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Username)
-                .IsUnique();
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationContext).Assembly);
         }
     }
 }

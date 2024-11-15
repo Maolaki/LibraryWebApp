@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using LibraryWebApp.BookService.Application.DTOs;
-using LibraryWebApp.BookService.Application.Interfaces;
+using LibraryWebApp.BookService.Domain.Interfaces;
 using LibraryWebApp.BookService.Infrastructure.Context;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace LibraryWebApp.BookService.Infrastructure.Repositories
 {
-    public class BookRepositoryWrapper : BookRepository, IBookRepositoryWrapper
+    public class BookRepositoryWrapper : BookRepository, IBookRepositoryWrapper<ImageDTO>
     {
         private readonly IMemoryCache _memoryCache;
 
@@ -33,7 +33,5 @@ namespace LibraryWebApp.BookService.Infrastructure.Repositories
             var cacheKey = $"book-image-{bookId}";
             _memoryCache.Set(cacheKey, imageDto, TimeSpan.FromDays(1));
         }
-
-
     }
 }

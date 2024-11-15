@@ -1,22 +1,22 @@
 ﻿using AutoMapper;
 using LibraryWebApp.BookService.Infrastructure.Repositories;
-using LibraryWebApp.BookService.Application.Profiles;
 using LibraryWebApp.BookService.Domain.Entities;
 using LibraryWebApp.BookService.Domain.Interfaces;
 using LibraryWebApp.BookService.Infrastructure.Context;
 using Microsoft.Extensions.Caching.Memory;
-using LibraryWebApp.BookService.Application.Interfaces;
+using LibraryWebApp.BookService.Application.DTOs;
+using BookService.Application.Profiles;
 
 namespace LibraryWebApp.BookService.Infrastructure
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork<ImageDTO>
     {
         public readonly ApplicationContext _context;
         private IMapper? mapper;
         private IMemoryCache _memoryCache;
         private IRepository<User>? userRepository;
         private IRepository<Author>? authorRepository;
-        private BookRepositoryWrapper? bookRepository;
+        private IBookRepositoryWrapper<ImageDTO>? bookRepository;
 
         public UnitOfWork(ApplicationContext context, IMemoryCache memoryCache)
         {
@@ -24,7 +24,8 @@ namespace LibraryWebApp.BookService.Infrastructure
 
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<MappingProfile>(); 
+                cfg.AddProfile<BookToBookProfile>();
+                cfg.AddProfile<BookToBookDTOProfile>();
             });
 
             mapper = config.CreateMapper();
@@ -57,11 +58,11 @@ namespace LibraryWebApp.BookService.Infrastructure
             {
                 if (bookRepository == null)
                     bookRepository = new BookRepositoryWrapper(_context, _memoryCache, mapper!);
-                return bookRepository;
+                return (IRepository<Book>)bookRepository;
             }
         }
 
-        public IBookRepositoryWrapper BookRepositoryWrapper
+        public IBookRepositoryWrapper<ImageDTO> BookRepositoryWrapper
         {
             get
             {
@@ -71,29 +72,9 @@ namespace LibraryWebApp.BookService.Infrastructure
             }
         }
 
-        public void Save()
+        public async Task<int> SaveAsync()
         {
-            _context.SaveChanges();
-        }
-
-        private bool disposed = false;
-
-        public virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    _context.Dispose();
-                }
-                this.disposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            return await _context.SaveChangesAsync();
         }
     }
 }

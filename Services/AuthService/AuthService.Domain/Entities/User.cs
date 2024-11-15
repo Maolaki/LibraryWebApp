@@ -14,7 +14,7 @@ namespace LibraryWebApp.AuthService.Domain.Entities
         public string? HashedPassword { get; set; }
         public UserRole Role { get; set; } = UserRole.User;
 
-        public ICollection<Book> Books { get; set; } = new List<Book>();
-        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
+        public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

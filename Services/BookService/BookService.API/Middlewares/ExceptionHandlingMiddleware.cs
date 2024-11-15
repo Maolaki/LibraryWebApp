@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LibraryWebApp.BookService.Application.Exceptions;
+using Newtonsoft.Json;
 using System.Data;
 using System.Net;
 
@@ -37,7 +38,7 @@ namespace LibraryWebApp.BookService.API.Middlewares
 
             switch (ex)
             {
-                case DirectoryNotFoundException:
+                case NotFoundException:
                     statusCode = (int)HttpStatusCode.NotFound;
                     message = "The requested resource was not found.";
                     break;

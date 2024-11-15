@@ -21,10 +21,10 @@ namespace LibraryWebApp.AuthService
                 app.UseSwaggerUI();
             }
 
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 

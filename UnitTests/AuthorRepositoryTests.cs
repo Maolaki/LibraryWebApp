@@ -52,7 +52,7 @@ namespace LibraryWebApp.UnitTests
         }
 
         [Fact]
-        public void Get_ExistingAuthor_ReturnsAuthor()
+        public async Task Get_ExistingAuthor_ReturnsAuthorAsync()
         {
             // Arrange
             var author = new Author
@@ -68,7 +68,7 @@ namespace LibraryWebApp.UnitTests
             _context.SaveChanges();
 
             // Act
-            var result = _repository.Get(a => a.Id == author.Id);
+            var result = await _repository.GetAsync(a => a.Id == author.Id);
 
             // Assert
             Assert.NotNull(result);
@@ -76,10 +76,10 @@ namespace LibraryWebApp.UnitTests
         }
 
         [Fact]
-        public void Get_NonExistingAuthor_ReturnsNull()
+        public async Task Get_NonExistingAuthor_ReturnsNullAsync()
         {
             // Act
-            var result = _repository.Get(a => a.Id == -1);
+            var result = await _repository.GetAsync(a => a.Id == -1);
 
             // Assert
             Assert.Null(result);

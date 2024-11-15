@@ -14,6 +14,6 @@ namespace LibraryWebApp.AuthorService.Domain.Entities
         public string? HashedPassword { get; set; }
         public UserRole Role { get; set; } = UserRole.User;
 
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }

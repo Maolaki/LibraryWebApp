@@ -1,48 +1,42 @@
-﻿using LibraryWebApp.AuthService.Application.Filters;
-using LibraryWebApp.AuthService.Application.DTOs;
+﻿using LibraryWebApp.AuthService.Application.DTOs;
 using LibraryWebApp.AuthService.Application.UseCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using LibraryWebApp.AuthService.API.Filters;
 
 [Route("[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly RegisterUserUseCase _registerUserUseCase;
-    private readonly AuthenticateUserUseCase _authenticateUserUseCase;
-    private readonly GetUserIdUseCase _getUserIdUseCase;
+    private readonly IMediator _mediator;
 
-    public AuthController(
-        RegisterUserUseCase registerUserUseCase,
-        AuthenticateUserUseCase authenticateUserUseCase,
-        GetUserIdUseCase getUserIdUseCase)
+    public AuthController(IMediator mediator)
     {
-        _registerUserUseCase = registerUserUseCase;
-        _getUserIdUseCase = getUserIdUseCase;
-        _authenticateUserUseCase = authenticateUserUseCase;
+        _mediator = mediator;
     }
 
     [HttpPost("register")]
     [ServiceFilter(typeof(ValidateModelAttribute))]
-    public IActionResult Register([FromBody] UserDTO userDto)
+    public async Task<IActionResult> Register([FromBody] UserDTO userDto)
     {
-        _registerUserUseCase.Execute(userDto);
+        await _mediator.Send(new RegisterUserCommand(userDto));
         return Ok();
     }
 
     [HttpPost("login")]
     [ServiceFilter(typeof(ValidateModelAttribute))]
-    public IActionResult Login([FromBody] LoginDTO loginDto)
+    public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
     {
-        var response = _authenticateUserUseCase.Execute(loginDto);
+        var response = await _mediator.Send(new AuthenticateUserQuery(loginDto));
         return Ok(response);
     }
 
     [HttpGet("get-id")]
     [Authorize, ServiceFilter(typeof(EnsureAuthenticatedUserFilter))]
-    public ActionResult<int> GetId()
+    public async Task<ActionResult<int>> GetId()
     {
-        var user = _getUserIdUseCase.Execute(User);
-        return Ok(user.Id);
+        var userId = await _mediator.Send(new GetUserIdQuery(User));
+        return Ok(userId);
     }
 }

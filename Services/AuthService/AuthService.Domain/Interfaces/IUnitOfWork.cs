@@ -2,10 +2,10 @@
 
 namespace LibraryWebApp.AuthService.Domain.Interfaces
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
         IRepository<User> Users { get; }
         IRepository<RefreshToken> RefreshTokens { get; }
-        void Save();
+        Task<int> SaveAsync();
     }
 }

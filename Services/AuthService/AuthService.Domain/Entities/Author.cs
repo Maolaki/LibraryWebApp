@@ -14,6 +14,6 @@ namespace LibraryWebApp.AuthService.Domain.Entities
         public DateOnly DateOfBirth { get; set; }
         public Country Country { get; set; }
 
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }
