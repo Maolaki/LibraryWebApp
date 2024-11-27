@@ -15,14 +15,9 @@ namespace LibraryWebApp.AuthorService.Application.UseCases
 
         public async Task<IEnumerable<Author>> Handle(GetAllAuthorsQuery request, CancellationToken cancellationToken)
         {
-            var allAuthors = await _unitOfWork.Authors.GetAllAsync();
+            var allAuthors = await _unitOfWork.Authors.GetAllAsync(request.PageNumber, request.PageSize);
 
-            var pagedAuthors = allAuthors
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-
-            return pagedAuthors;
+            return allAuthors;
         }
     }
 }

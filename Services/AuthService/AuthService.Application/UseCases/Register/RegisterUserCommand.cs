@@ -1,7 +1,12 @@
-﻿using LibraryWebApp.AuthService.Application.DTOs;
-using MediatR;
+﻿using MediatR;
+using LibraryWebApp.AuthService.Domain.Enums;
 
 namespace LibraryWebApp.AuthService.Application.UseCases
 {
-    public record RegisterUserCommand(UserDTO UserDto) : IRequest<Unit>;
+    public record RegisterUserCommand(
+        string? Username,
+        string? Email,
+        string? Password,
+        UserRole Role = UserRole.User
+    ) : IRequest<Unit>;
 }

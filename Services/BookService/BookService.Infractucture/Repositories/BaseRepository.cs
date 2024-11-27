@@ -16,9 +16,12 @@ namespace LibraryWebApp.BookService.Infrastructure.Repositories
             _dbSet = _applicationContext.Set<T>();
         }
 
-        public async Task<List<T>> GetAllAsync()
+        public async virtual Task<IEnumerable<T>> GetAllAsync(int pageNumber, int pageSize)
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         public virtual async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
@@ -31,9 +34,9 @@ namespace LibraryWebApp.BookService.Infrastructure.Repositories
             _dbSet.Add(entity);
         }
 
-        public virtual void Update(T existingEntity, T entity)
+        public void Update(T entity)
         {
-            throw new NotImplementedException();
+            _dbSet.Update(entity);
         }
 
         public void Delete(T entity)

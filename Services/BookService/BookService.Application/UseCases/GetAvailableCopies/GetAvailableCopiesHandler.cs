@@ -16,7 +16,7 @@ namespace LibraryWebApp.BookService.Application.UseCases
 
         public async Task<int> Handle(GetAvailableCopiesQuery request, CancellationToken cancellationToken)
         {
-            var allBooks = await _unitOfWork.Books.GetAllAsync();
+            var allBooks = await _unitOfWork.Books.GetAllAsync(1, int.MaxValue);
             
             var filteredBooks = allBooks
                 .Where(b => b.ISBN == request.ISBN)

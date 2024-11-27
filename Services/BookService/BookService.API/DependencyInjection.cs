@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using LibraryWebApp.BookService.Application.Entities;
 using LibraryWebApp.BookService.Application.Services;
-using LibraryWebApp.BookService.Application.Validators;
 using LibraryWebApp.BookService.Domain.Interfaces;
 using Quartz.Impl;
 using Quartz.Spi;
@@ -11,6 +10,8 @@ using BookService.Application.Profiles;
 using LibraryWebApp.BookService.API.Filters;
 using LibraryWebApp.BookService.Application.UseCases;
 using LibraryWebApp.BookService.Application.DTOs;
+using MediatR;
+using LibraryWebApp.BookService.Application.Behaviors;
 
 namespace LibraryWebApp.BookService.API
 {
@@ -36,10 +37,9 @@ namespace LibraryWebApp.BookService.API
 
             services.AddAutoMapper(typeof(BookToBookProfile).Assembly);
 
-            services.AddValidatorsFromAssemblyContaining<BookDTOValidator>();
-            services.AddValidatorsFromAssemblyContaining<ImageDTOValidator>();
+            services.AddValidatorsFromAssembly(typeof(AddBookCommandValidator).Assembly);
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-            services.AddScoped<ValidateModelAttribute>();
             services.AddScoped<EnsureAuthenticatedUserFilter>();
         }
     }

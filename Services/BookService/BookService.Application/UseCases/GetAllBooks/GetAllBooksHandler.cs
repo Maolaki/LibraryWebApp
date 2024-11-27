@@ -17,20 +17,14 @@ namespace LibraryWebApp.BookService.Application.UseCases
 
         public async Task<IEnumerable<Book>> Handle(GetAllBooksQuery request, CancellationToken cancellationToken)
         {
-            var uniqueBooks = await _unitOfWork.Books.GetAllAsync();
+            var uniqueBooks = await _unitOfWork.Books.GetAllAsync(request.PageNumber, request.PageSize);
 
-            var filteredBooks = uniqueBooks
-                .GroupBy(book => book.ISBN)
-                .Select(group => group.First())
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize);
-
-            if (!filteredBooks.Any())
+            if (!uniqueBooks.Any())
             {
                 throw new NotFoundException("Books not found.");
             }
 
-            return await Task.FromResult(filteredBooks);
+            return await Task.FromResult(uniqueBooks);
         }
     }
 }

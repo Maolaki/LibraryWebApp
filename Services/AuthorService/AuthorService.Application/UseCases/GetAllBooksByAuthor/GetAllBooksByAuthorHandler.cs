@@ -21,12 +21,10 @@ namespace LibraryWebApp.AuthorService.Application.UseCases
             if (existingAuthor == null)
                 throw new NotFoundException($"Author with ID {request.AuthorId} not found.");
 
-            var allBooks = await _unitOfWork.Books.GetAllAsync();
+            var allBooks = await _unitOfWork.Books.GetAllAsync(request.PageNumber, request.PageSize);
 
             var filterdBooks = allBooks
                 .Where(b => b.Author == existingAuthor)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
                 .ToList();
 
             return filterdBooks;

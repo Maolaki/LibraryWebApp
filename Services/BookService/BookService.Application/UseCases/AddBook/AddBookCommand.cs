@@ -1,15 +1,16 @@
-﻿using LibraryWebApp.BookService.Domain.Entities;
+﻿using LibraryWebApp.BookService.Domain.Enums;
 using MediatR;
 
 namespace LibraryWebApp.BookService.Application.UseCases
 {
-    public class AddBookCommand : IRequest<Unit>
-    {
-        public Book Book { get; }
-
-        public AddBookCommand(Book book)
-        {
-            Book = book;
-        }
-    }
+    public record AddBookCommand(
+        string? ISBN,
+        string? Title,
+        string? Description,
+        BookGenre Genre,
+        int AuthorId,
+        long? UserId,
+        DateTime? CheckoutDateTime,
+        DateTime? ReturnDateTime
+    ) : IRequest<Unit>;
 }

@@ -1,4 +1,5 @@
-﻿using LibraryWebApp.AuthorService.Domain.Interfaces;
+﻿using LibraryWebApp.AuthorService.Domain.Entities;
+using LibraryWebApp.AuthorService.Domain.Interfaces;
 using MediatR;
 
 namespace LibraryWebApp.AuthorService.Application.UseCases
@@ -14,7 +15,16 @@ namespace LibraryWebApp.AuthorService.Application.UseCases
 
         public async Task<Unit> Handle(AddAuthorCommand request, CancellationToken cancellationToken)
         {
-            _unitOfWork.Authors.Create(request.Author);
+            var newAuthor = new Author
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                DateOfBirth = request.DateOfBirth,
+                Country = request.Country,
+                Books = new List<Book>(),
+            };
+
+            _unitOfWork.Authors.Create(newAuthor);
             await _unitOfWork.SaveAsync();
             return Unit.Value;
         }

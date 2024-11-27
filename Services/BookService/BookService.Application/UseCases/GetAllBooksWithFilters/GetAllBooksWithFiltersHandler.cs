@@ -17,41 +17,14 @@ namespace LibraryWebApp.BookService.Application.UseCases
 
         public async Task<IEnumerable<Book>> Handle(GetAllBooksWithFiltersQuery request, CancellationToken cancellationToken)
         {
-            var booksQuery = await _unitOfWork.Books.GetAllAsync();
+            var booksQuery = await _unitOfWork.Books.GetAllWithFiltersAsync(request.PageNumber, request.PageSize, request.Title, request.AuthorId, request.Genre);
 
-            if (!string.IsNullOrEmpty(request.Title))
-            {
-                booksQuery = booksQuery
-                             .Where(b => b.Title!.Contains(request.Title, StringComparison.OrdinalIgnoreCase))
-                             .ToList();
-            }
-
-            if (request.AuthorId != null)
-            {
-                booksQuery = booksQuery
-                            .Where(book => book.AuthorId == request.AuthorId)
-                            .ToList();
-            }
-
-            if (request.Genre.HasValue)
-            {
-                booksQuery = booksQuery
-                            .Where(book => book.Genre == request.Genre.Value)
-                            .ToList();
-            }
-
-            var uniqueBooks = booksQuery
-                .GroupBy(book => book.ISBN)
-                .Select(group => group.First())
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize);
-
-            if (!uniqueBooks.Any())
+            if (!booksQuery.Any())
             {
                 throw new NotFoundException("Books with filters not found.");
             }
 
-            return await Task.FromResult(uniqueBooks);
+            return await Task.FromResult(booksQuery);
         }
     }
 }

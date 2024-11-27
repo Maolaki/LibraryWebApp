@@ -8,30 +8,30 @@ namespace LibraryWebApp.AuthService.Application.UseCases
 {
     public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Unit>
     {
-        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPasswordHasher _passwordHasher;
 
-        public RegisterUserHandler(IMapper mapper, IUnitOfWork unitOfWork, IPasswordHasher passwordHasher)
+        public RegisterUserHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher)
         {
-            _mapper = mapper;
             _unitOfWork = unitOfWork;
             _passwordHasher = passwordHasher;
         }
 
         public async Task<Unit> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var userDto = request.UserDto;
-
-            var existingUser = await _unitOfWork.Users.GetAsync(u => u.Email == userDto.Email || u.Username == userDto.Username);
+            var existingUser = await _unitOfWork.Users.GetAsync(u => u.Email == request.Email || u.Username == request.Username);
             if (existingUser != null)
             {
                 throw new DuplicateNameException("Пользователь с таким email или username уже существует.");
             }
 
-            userDto.Password = _passwordHasher.HashPassword(userDto.Password!);
-
-            var newUser = _mapper.Map<User>(userDto);
+            var newUser = new User
+            {
+                Username = request.Username,
+                HashedPassword = _passwordHasher.HashPassword(request.Password!),
+                Email = request.Email,
+                Role = request.Role,
+            };
 
             _unitOfWork.Users.Create(newUser);
             await _unitOfWork.SaveAsync(); 

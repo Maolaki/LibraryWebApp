@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using LibraryWebApp.AuthorService.Application.DTOs;
 using LibraryWebApp.AuthorService.Application.UseCases;
-using LibraryWebApp.AuthorService.Domain.Entities;
 using LibraryWebApp.AuthorService.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using LibraryWebApp.AuthorService.API.Filters;
 
 namespace LibraryWebApp.AuthorService.API.Controllers
 {
@@ -50,22 +48,20 @@ namespace LibraryWebApp.AuthorService.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(UserRole.Admin)), ServiceFilter(typeof(ValidateModelAttribute))]
-        public async Task<ActionResult> AddAuthor([FromBody] AuthorDTO authorDto)
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<ActionResult> AddAuthor([FromBody] AddAuthorCommand command)
         {
-            var author = _mapper.Map<Author>(authorDto);
-            var command = new AddAuthorCommand(author);
             await _mediator.Send(command);
             return Ok();
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = nameof(UserRole.Admin)), ServiceFilter(typeof(ValidateModelAttribute))]
-        public async Task<ActionResult> UpdateAuthor(int id, [FromBody] AuthorDTO authorDto)
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<ActionResult> UpdateAuthor(int id, [FromBody] UpdateAuthorCommand command)
         {
-            var author = _mapper.Map<Author>(authorDto);
-            author.Id = id;
-            var command = new UpdateAuthorCommand(author);
+            if (command.Id != id)
+                throw new ArgumentException("Wrong book id.");
+
             await _mediator.Send(command);
             return Ok();
         }

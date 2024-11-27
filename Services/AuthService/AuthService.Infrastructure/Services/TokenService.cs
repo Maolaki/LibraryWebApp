@@ -1,4 +1,6 @@
-﻿using LibraryWebApp.AuthService.Domain.Interfaces;
+﻿using LibraryWebApp.AuthService.Application.Interfaces;
+using LibraryWebApp.AuthService.Domain.Entities;
+using LibraryWebApp.AuthService.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,6 +19,17 @@ namespace LibraryWebApp.AuthService.Infrastructure.Services
         {
             _configuration = configuration;
             _unitOfWork = unitOfWork;
+        }
+
+        public List<Claim> GenerateClaims(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username!),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
+
+            return claims;
         }
 
         public string GenerateAccessToken(IEnumerable<Claim> claims)

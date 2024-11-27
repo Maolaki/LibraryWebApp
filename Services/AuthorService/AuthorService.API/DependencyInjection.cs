@@ -1,10 +1,10 @@
 ﻿using LibraryWebApp.AuthorService.Domain.Interfaces;
 using LibraryWebApp.AuthorService.Application.Profiles;
 using FluentValidation;
-using LibraryWebApp.AuthorService.Application.Validators;
-using LibraryWebApp.AuthorService.API.Filters;
 using LibraryWebApp.AuthorService.Infrastructure;
 using LibraryWebApp.AuthorService.Application.UseCases;
+using LibraryWebApp.AuthorService.Application.Behaviors;
+using MediatR;
 
 namespace LibraryWebApp.AuthorService.API
 {
@@ -18,9 +18,8 @@ namespace LibraryWebApp.AuthorService.API
 
             services.AddAutoMapper(typeof(AuthorToAuthorProfile).Assembly);
 
-            services.AddValidatorsFromAssemblyContaining<AuthorDTOValidator>();
-
-            services.AddScoped<ValidateModelAttribute>();
+            services.AddValidatorsFromAssembly(typeof(AddAuthorCommandValidator).Assembly);
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using LibraryWebApp.BookService.Application.DTOs;
+using LibraryWebApp.BookService.Domain.Entities;
 using LibraryWebApp.BookService.Domain.Interfaces;
 using MediatR;
 
@@ -15,14 +16,21 @@ namespace LibraryWebApp.BookService.Application.UseCases
 
         public async Task<Unit> Handle(AddBookCommand request, CancellationToken cancellationToken)
         {
-            var existingBook = await _unitOfWork.Books.GetAsync(b => b.Id == request.Book.Id);
-            if (existingBook != null)
+            var newBook = new Book
             {
-                throw new ArgumentException($"Book with Id {request.Book.Id} already exists.");
-            }
+                ISBN = request.ISBN,
+                Title = request.Title,
+                Description = request.Description,
+                Genre = request.Genre,
+                AuthorId = request.AuthorId,
+                UserId = request.UserId,
+                CheckoutDateTime = request.CheckoutDateTime,
+                ReturnDateTime = request.ReturnDateTime,
+            };
 
-            _unitOfWork.Books.Create(request.Book);
+            _unitOfWork.Books.Create(newBook);
             await _unitOfWork.SaveAsync();
+
             return Unit.Value;
         }
     }

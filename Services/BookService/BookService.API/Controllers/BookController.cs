@@ -6,7 +6,6 @@ using LibraryWebApp.BookService.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using LibraryWebApp.BookService.Domain.Entities;
 
 namespace BookService.API.Controllers
 {
@@ -68,21 +67,20 @@ namespace BookService.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(UserRole.Admin)), ServiceFilter(typeof(ValidateModelAttribute))]
-        public async Task<ActionResult> AddBook([FromBody] BookDTO bookDto)
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<ActionResult> AddBook([FromBody] AddBookCommand command)
         {
-            var command = new AddBookCommand(_mapper.Map<Book>(bookDto));
             await _mediator.Send(command);
             return Ok();
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = nameof(UserRole.Admin)), ServiceFilter(typeof(ValidateModelAttribute))]
-        public async Task<ActionResult> UpdateBook(int id, [FromBody] BookDTO bookDto)
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<ActionResult> UpdateBook(int id, [FromBody] UpdateBookCommand command)
         {
-            var book = _mapper.Map<Book>(bookDto);
-            book.Id = id;
-            var command = new UpdateBookCommand(book);
+            if (command.Id != id)
+                throw new ArgumentException("Wrong book Id.");
+
             await _mediator.Send(command);
             return Ok();
         }

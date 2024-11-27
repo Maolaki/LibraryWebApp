@@ -3,6 +3,7 @@ using System.Security.Claims;
 using LibraryWebApp.AuthService.Application.Entities;
 using LibraryWebApp.AuthService.Domain.Entities;
 using MediatR;
+using LibraryWebApp.AuthService.Application.Interfaces;
 
 namespace LibraryWebApp.AuthService.Application.UseCases
 {
@@ -21,19 +22,14 @@ namespace LibraryWebApp.AuthService.Application.UseCases
 
         public async Task<AuthenticatedDTO> Handle(AuthenticateUserQuery request, CancellationToken cancellationToken)
         {
-            var loginDto = request.LoginDto;
-            var user = await _unitOfWork.Users.GetAsync(u => u.Username == loginDto.Login || u.Email == loginDto.Login);
+            var user = await _unitOfWork.Users.GetAsync(u => u.Username == request.Login || u.Email == request.Login);
 
-            if (user == null || !_passwordHasher.VerifyPassword(loginDto.Password!, user.HashedPassword!))
+            if (user == null || !_passwordHasher.VerifyPassword(request.Password!, user.HashedPassword!))
             {
                 throw new ArgumentException("Wrong login or/and password");
             }
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username!),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
-            };
+            var claims = _tokenService.GenerateClaims(user);
 
             var accessToken = _tokenService.GenerateAccessToken(claims);
             var refreshToken = _tokenService.GenerateRefreshToken();

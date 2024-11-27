@@ -2,10 +2,12 @@
 using LibraryWebApp.AuthService.Infrastructure.Services;
 using LibraryWebApp.AuthService.Application.Profiles;
 using FluentValidation;
-using LibraryWebApp.AuthService.Application.Validators;
 using LibraryWebApp.AuthService.API.Filters;
 using LibraryWebApp.AuthService.Infrastructure.Entities;
 using LibraryWebApp.AuthService.Application.UseCases;
+using LibraryWebApp.AuthService.Application.Behaviors;
+using MediatR;
+using LibraryWebApp.AuthService.Application.Interfaces;
 
 namespace LibraryWebApp.AuthService.Infrastructure
 {
@@ -21,11 +23,9 @@ namespace LibraryWebApp.AuthService.Infrastructure
 
             services.AddAutoMapper(typeof(MappingProfile));
 
-            services.AddValidatorsFromAssemblyContaining<UserDTOValidator>();
-            services.AddValidatorsFromAssemblyContaining<LoginDTOValidator>();
-            services.AddValidatorsFromAssemblyContaining<AuthenticatedDTOValidator>();
+            services.AddValidatorsFromAssembly(typeof(AuthenticateUserQueryValidator).Assembly);
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-            services.AddScoped<ValidateModelAttribute>();
             services.AddScoped<EnsureAuthenticatedUserFilter>();
         }
     }

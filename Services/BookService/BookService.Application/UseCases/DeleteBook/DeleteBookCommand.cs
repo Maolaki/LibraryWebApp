@@ -2,13 +2,5 @@
 
 namespace LibraryWebApp.BookService.Application.UseCases
 {
-    public class DeleteBookCommand : IRequest<Unit>
-    {
-        public int BookId { get; }
-
-        public DeleteBookCommand(int bookId)
-        {
-            BookId = bookId;
-        }
-    }
+    public record DeleteBookCommand(int BookId) : IRequest<Unit>;
 }

@@ -6,16 +6,6 @@ namespace LibraryWebApp.AuthorService.Infrastructure.Repositories
 {
     public class AuthorRepository : BaseRepository<Author>
     {
-        private IMapper mapper;
-
-        public AuthorRepository(ApplicationContext applicationContext, IMapper mapper) : base(applicationContext)
-        {
-            this.mapper = mapper;
-        }
-
-        public override void Update(Author existingAuthor, Author author)
-        {
-            mapper.Map(author, existingAuthor);
-        }
+        public AuthorRepository(ApplicationContext applicationContext, IMapper mapper) : base(applicationContext) {}
     }
 }

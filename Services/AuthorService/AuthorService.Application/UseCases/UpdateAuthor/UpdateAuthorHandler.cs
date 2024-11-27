@@ -15,12 +15,17 @@ namespace LibraryWebApp.AuthorService.Application.UseCases
 
         public async Task<Unit> Handle(UpdateAuthorCommand request, CancellationToken cancellationToken)
         {
-            var existingAuthor = await _unitOfWork.Authors.GetAsync(a => a.Id == request.Author.Id);
+            var existingAuthor = await _unitOfWork.Authors.GetAsync(a => a.Id == request.Id);
 
             if (existingAuthor == null)
-                throw new NotFoundException($"Author with ID {request.Author.Id} not found.");
+                throw new NotFoundException($"Author with ID {request.Id} not found.");
 
-            _unitOfWork.Authors.Update(existingAuthor, request.Author);
+            existingAuthor.FirstName = request.FirstName ?? existingAuthor.FirstName;
+            existingAuthor.LastName = request.LastName ?? existingAuthor.LastName;
+            existingAuthor.DateOfBirth = request.DateOfBirth ?? existingAuthor.DateOfBirth;
+            existingAuthor.Country = request.Country ?? existingAuthor.Country;
+
+            _unitOfWork.Authors.Update(existingAuthor);
             await _unitOfWork.SaveAsync();
 
             return Unit.Value;

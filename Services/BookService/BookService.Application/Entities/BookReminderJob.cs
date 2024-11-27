@@ -17,7 +17,7 @@ namespace LibraryWebApp.BookService.Application.Entities
 
         public async Task Execute(IJobExecutionContext context)
         {
-            var overdueBooks = await _unitOfWork.Books.GetAllAsync();
+            var overdueBooks = await _unitOfWork.Books.GetAllAsync(1, int.MaxValue);
 
             var filteredBooks = overdueBooks
                 .Where(b => b.ReturnDateTime < DateTime.Now)

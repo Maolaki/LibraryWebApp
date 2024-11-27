@@ -1,5 +1,4 @@
-﻿using LibraryWebApp.AuthService.Application.DTOs;
-using LibraryWebApp.AuthService.Application.UseCases;
+﻿using LibraryWebApp.AuthService.Application.UseCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
@@ -17,18 +16,16 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    [ServiceFilter(typeof(ValidateModelAttribute))]
-    public async Task<IActionResult> Register([FromBody] UserDTO userDto)
+    public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
     {
-        await _mediator.Send(new RegisterUserCommand(userDto));
+        await _mediator.Send(command);
         return Ok();
     }
 
     [HttpPost("login")]
-    [ServiceFilter(typeof(ValidateModelAttribute))]
-    public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
+    public async Task<IActionResult> Login([FromBody] AuthenticateUserQuery loginDto)
     {
-        var response = await _mediator.Send(new AuthenticateUserQuery(loginDto));
+        var response = await _mediator.Send(loginDto);
         return Ok(response);
     }
 

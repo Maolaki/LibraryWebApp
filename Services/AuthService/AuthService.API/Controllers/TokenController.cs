@@ -2,7 +2,6 @@
 using LibraryWebApp.AuthService.Application.UseCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using LibraryWebApp.AuthService.Application.Entities;
 using LibraryWebApp.AuthService.API.Filters;
 
 [Route("[controller]")]
@@ -33,10 +32,10 @@ public class TokenController : ControllerBase
     }
 
     [HttpPost("refresh")]
-    [Authorize, ServiceFilter(typeof(ValidateModelAttribute))]
-    public async Task<IActionResult> RefreshTokens([FromBody] AuthenticatedDTO authenticatedResponse)
+    [Authorize]
+    public async Task<IActionResult> RefreshTokens([FromBody] RefreshTokensCommand command)
     {
-        var newAccessToken = await _mediator.Send(new RefreshTokensCommand(authenticatedResponse));
+        var newAccessToken = await _mediator.Send(command);
         return Ok(new { AccessToken = newAccessToken });
     }
 }

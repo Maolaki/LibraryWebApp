@@ -6,7 +6,7 @@ namespace LibraryWebApp.BookService.Domain.Interfaces
     {
         IRepository<User> Users { get; }
         IRepository<Author> Authors { get; }
-        IRepository<Book> Books { get; }
+        IBookRepository Books { get; }
         IBookRepositoryWrapper<T> BookRepositoryWrapper { get; }
         Task<int> SaveAsync();
     }

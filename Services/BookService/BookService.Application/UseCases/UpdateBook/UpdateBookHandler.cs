@@ -16,13 +16,22 @@ namespace LibraryWebApp.BookService.Application.UseCases
 
         public async Task<Unit> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
         {
-            var existingBook = await _unitOfWork.Books.GetAsync(b => b.Id == request.UpdatedBook.Id);
+            var existingBook = await _unitOfWork.Books.GetAsync(b => b.Id == request.Id);
             if (existingBook == null)
             {
-                throw new NotFoundException($"Book with Id {request.UpdatedBook.Id} not found.");
+                throw new NotFoundException($"Book with Id {request.Id} not found.");
             }
 
-            _unitOfWork.Books.Update(existingBook, request.UpdatedBook);
+            existingBook.ISBN = request.ISBN ?? existingBook.ISBN;
+            existingBook.Title = request.Title ?? existingBook.Title;
+            existingBook.Description = request.Description ?? existingBook.Description;
+            existingBook.Genre = request.Genre ?? existingBook.Genre;
+            existingBook.AuthorId = request.AuthorId ?? existingBook.AuthorId;
+            existingBook.UserId = request.UserId ?? existingBook.UserId;
+            existingBook.CheckoutDateTime = request.CheckoutDateTime ?? existingBook.CheckoutDateTime;
+            existingBook.ReturnDateTime = request.ReturnDateTime ?? existingBook.ReturnDateTime;
+
+            _unitOfWork.Books.Update(existingBook);
             await _unitOfWork.SaveAsync();
 
             return await Task.FromResult(Unit.Value);

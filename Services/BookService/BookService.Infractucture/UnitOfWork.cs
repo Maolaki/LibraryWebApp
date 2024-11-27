@@ -52,13 +52,13 @@ namespace LibraryWebApp.BookService.Infrastructure
             }
         }
 
-        public IRepository<Book> Books
+        public IBookRepository Books
         {
             get
             {
                 if (bookRepository == null)
                     bookRepository = new BookRepositoryWrapper(_context, _memoryCache, mapper!);
-                return (IRepository<Book>)bookRepository;
+                return (IBookRepository)bookRepository;
             }
         }
 

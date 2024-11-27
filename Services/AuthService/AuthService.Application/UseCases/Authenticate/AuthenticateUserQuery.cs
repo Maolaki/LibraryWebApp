@@ -1,8 +1,10 @@
-﻿using LibraryWebApp.AuthService.Application.DTOs;
+﻿using MediatR;
 using LibraryWebApp.AuthService.Application.Entities;
-using MediatR;
 
 namespace LibraryWebApp.AuthService.Application.UseCases
 {
-    public record AuthenticateUserQuery(LoginDTO LoginDto) : IRequest<AuthenticatedDTO>;
+    public record AuthenticateUserQuery(
+        string? Login,
+        string? Password
+    ) : IRequest<AuthenticatedDTO>;
 }
